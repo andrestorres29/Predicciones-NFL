@@ -74,14 +74,42 @@ if opcion == "1. Predecir resultado de partido":
         st.success(f"Resultado: {resultado}")
 
 # 2. Predicción de desempeño de jugador (placeholder)
+# 2. Predicción de desempeño de jugador
 elif opcion == "2. Predecir desempeño de jugador":
     st.header("2. Desempeño de Jugador")
-    jugador = st.text_input("Nombre del jugador")
-    rival = st.text_input("Nombre del rival")
-    posicion = st.selectbox("Posición", ["QB", "RB", "WR", "TE", "DEF"])
+
+    jugador = st.text_input("Nombre exacto del jugador (ej. P.Garcon)")
+    rival = st.selectbox("Equipo rival", [
+        'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 'DEN', 'DET', 'GB',
+        'HOU', 'IND', 'JAX', 'KC', 'LAC', 'LAR', 'LV', 'MIA', 'MIN', 'NE', 'NO',
+        'NYG', 'NYJ', 'PHI', 'PIT', 'SEA', 'SF', 'TB', 'TEN', 'WAS'
+    ])
+    temporada = st.number_input("Temporada", min_value=2016, max_value=2025, value=2021)
+    cesped = st.selectbox("Tipo de césped", ["Natural", "Sintético"])
+    lesion_ocurrida = st.selectbox("¿Tuvo una lesión esta temporada?", ["No", "Sí"])
 
     if st.button("Predecir Desempeño"):
-        st.warning("🔧 Este módulo está pendiente de integración con features reales.")
+        jugador_col = f"player_name_{jugador}"
+        rival_col = f"equipo_rival_{rival}"
+        surface_col = "surface_natural" if cesped == "Natural" else "surface_sintetica"
+
+        # Crear DataFrame con ceros
+        x = pd.DataFrame(data=np.zeros((1, len(modelo_desempeno.feature_names_in_))), columns=modelo_desempeno.feature_names_in_)
+
+        # Asignar valores
+        x.loc[0, jugador_col] = 1
+        x.loc[0, rival_col] = 1
+        x.loc[0, surface_col] = 1
+        x.loc[0, "season"] = temporada
+        x.loc[0, "lesion_occurred"] = 1 if lesion_ocurrida == "Sí" else 0
+
+        # Predicción
+        proba = modelo_desempeno.predict_proba(x)[0][1]
+        clase = modelo_desempeno.predict(x)[0]
+
+        st.markdown(f"🎯 **Predicción para {jugador} vs {rival}:**")
+        st.write(f"Probabilidad de alto desempeño: {proba:.2f} → Clasificación: {clase}")
+
 
 # 3. Recomendación de alineación (placeholder)
 elif opcion == "3. Recomendación de alineación":
