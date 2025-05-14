@@ -37,6 +37,32 @@ equipo_a_codigo = {
 
 equipos_lista = list(equipo_a_codigo.keys())
 
+def mejores_jugadores_contra(mi_equipo, equipo_rival, season, surface, lesion_occurred, df_base, modelo, columnas_originales):
+    jugadores_equipo = df_base[df_base[f"equipo_{mi_equipo}"] == 1]["jugador"].unique()
+    lista_resultados = []
+
+    for jugador in jugadores_equipo:
+        jugador_col = f"player_name_{jugador}"
+        rival_col = f"equipo_rival_{equipo_rival}"
+        surface_col = "surface_natural" if surface == "grass" else "surface_sintetica"
+
+        x = pd.DataFrame(data=np.zeros((1, len(columnas_originales))), columns=columnas_originales)
+
+        if jugador_col in x.columns:
+            x.loc[0, jugador_col] = 1
+            x.loc[0, rival_col] = 1
+            x.loc[0, surface_col] = 1
+            x.loc[0, "season"] = season
+            x.loc[0, "lesion_occurred"] = lesion_occurred
+
+            proba = modelo.predict_proba(x)[0][1]
+            lista_resultados.append({"jugador": jugador, "probabilidad": proba})
+
+    resultados = pd.DataFrame(lista_resultados)
+    resultados = resultados.sort_values(by="probabilidad", ascending=False).reset_index(drop=True)
+    return resultados
+
+
 # 1. Predecir resultado de partido
 if opcion == "1. Predecir resultado de partido":
     st.header("1. Predicción de Resultado del Partido")
