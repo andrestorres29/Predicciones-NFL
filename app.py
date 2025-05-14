@@ -12,7 +12,7 @@ modelo_victoria = joblib.load("modelo_victoria.sav")
 modelo_desempeno = joblib.load("modelo_desempeno.sav")
 
 # Cargar dataset base para recomendación de jugadores
-joblib.dump(df_encoded, "dataset_base.pkl")
+df_base = pd.read_csv("dataset_base.csv")
 
 from xgboost import XGBClassifier
 
