@@ -112,13 +112,48 @@ elif opcion == "2. Predecir desempeño de jugador":
 
 
 # 3. Recomendación de alineación (placeholder)
+# 3. Recomendación de alineación
 elif opcion == "3. Recomendación de alineación":
     st.header("3. Recomendación de Alineación")
-    equipo = st.text_input("Nombre del equipo")
-    rival = st.text_input("Nombre del rival")
+
+    mi_equipo = st.selectbox("Tu equipo", [
+        'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 'DEN', 'DET', 'GB',
+        'HOU', 'IND', 'JAX', 'KC', 'LAC', 'LAR', 'LV', 'MIA', 'MIN', 'NE', 'NO',
+        'NYG', 'NYJ', 'PHI', 'PIT', 'SEA', 'SF', 'TB', 'TEN', 'WAS'
+    ])
+    rival = st.selectbox("Equipo rival", [
+        'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 'DEN', 'DET', 'GB',
+        'HOU', 'IND', 'JAX', 'KC', 'LAC', 'LAR', 'LV', 'MIA', 'MIN', 'NE', 'NO',
+        'NYG', 'NYJ', 'PHI', 'PIT', 'SEA', 'SF', 'TB', 'TEN', 'WAS'
+    ])
+    temporada = st.number_input("Temporada", min_value=2016, max_value=2025, value=2021)
+    cesped = st.selectbox("Tipo de césped", ["Natural", "Sintético"])
+    lesion_ocurrida = st.selectbox("¿Considerar jugadores lesionados?", ["Sí", "No"])
 
     if st.button("Recomendar Jugadores"):
-        st.warning("🔧 Este módulo requiere lógica de recomendación personalizada.")
+        incluir_lesionados = 1 if lesion_ocurrida == "Sí" else 0
+
+        try:
+            resultados = mejores_jugadores_contra(
+                mi_equipo=mi_equipo,
+                equipo_rival=rival,
+                season=temporada,
+                surface="grass" if cesped == "Natural" else "turf",
+                lesion_occurred=incluir_lesionados,
+                df_base=df_base,
+                modelo=modelo_desempeno,
+                columnas_originales=modelo_desempeno.feature_names_in_
+            )
+
+            top3 = resultados.head(3)
+
+            st.markdown(f"🎯 **Top 3 jugadores de {mi_equipo} contra {rival}:**")
+            for _, row in top3.iterrows():
+                st.write(f"  {row['jugador']:<20} → Probabilidad alto desempeño: {row['probabilidad']:.2f}")
+
+        except Exception as e:
+            st.error(f"⚠️ Error al generar recomendaciones: {e}")
+
 
 # 4. Predicción de lesiones
 elif opcion == "4. Predicción de lesiones":
