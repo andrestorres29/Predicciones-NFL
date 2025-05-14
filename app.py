@@ -6,7 +6,10 @@ import numpy as np
 # Cargar modelos
 modelo_victoria = joblib.load("modelo_victoria.sav")
 modelo_desempeno = joblib.load("modelo_desempeno.sav")
-modelo_lesiones = joblib.load("modelo_lesiones.sav")
+from xgboost import XGBClassifier
+
+modelo_lesiones = XGBClassifier()
+modelo_lesiones.load_model("modelo_lesiones.json")
 
 st.title("🏈 Predicciones NFL - Proyecto de Irvin")
 opcion = st.sidebar.selectbox("Selecciona un objetivo", [
