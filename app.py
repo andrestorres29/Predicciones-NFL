@@ -2,10 +2,18 @@ import streamlit as st
 import joblib
 import pandas as pd
 import numpy as np
+import streamlit as st
+import joblib
+import pandas as pd
+import numpy as np
 
 # Cargar modelos
 modelo_victoria = joblib.load("modelo_victoria.sav")
 modelo_desempeno = joblib.load("modelo_desempeno.sav")
+
+# Cargar dataset base para recomendación de jugadores
+df_base = pd.read_csv("dataset_base.csv")
+
 from xgboost import XGBClassifier
 
 modelo_lesiones = XGBClassifier()
