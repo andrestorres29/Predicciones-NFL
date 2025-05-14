@@ -4,9 +4,10 @@ import pandas as pd
 import numpy as np
 
 # Cargar modelos
-modelo_victoria = joblib.load("models/modelo_victoria.sav")
-modelo_desempeno = joblib.load("models/modelo_desempeno.sav")
-modelo_lesiones = joblib.load("models/modelo_lesiones.sav")
+modelo_victoria = joblib.load("modelo_victoria.sav")
+modelo_desempeno = joblib.load("modelo_desempeno.sav")
+modelo_lesiones = joblib.load("modelo_lesiones.sav")
+
 
 st.title("🏈 Predicciones NFL - Proyecto de Irvin")
 opcion = st.sidebar.selectbox("Selecciona un objetivo", [
