@@ -26,7 +26,7 @@ if opcion == "1. Predecir resultado de partido":
 
     if st.button("Predecir Resultado"):
         local_flag = 1 if local == "Local" else 0
-        datos = pd.DataFrame([[yardas, turnovers, local_flag]], columns=["yardas", "turnovers", "local"])
+        datos = pd.DataFrame([[yardas, turnovers, local_flag]], columns=["total_yards", "turnovers", "home_flag"])
         pred = modelo_victoria.predict(datos)[0]
         resultado = "Ganará" if pred == 1 else "Perderá"
         st.success(f"Resultado: {resultado}")
