@@ -192,14 +192,39 @@ elif opcion == "3. Recomendación de alineación":
 # 4. Predicción de lesiones
 elif opcion == "4. Predicción de lesiones":
     st.header("4. Predicción de Lesión")
-    jugador = st.text_input("Nombre del jugador")
-    posicion = st.selectbox("Posición", ["QB", "RB", "WR", "TE", "DEF"])
-    jugadas = st.number_input("Jugadas jugadas acumuladas", min_value=0)
-    cesped = st.selectbox("Tipo de césped", ["Artificial", "Natural"])
+
+    equipo = st.selectbox("Equipo del jugador", [
+        'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 'DEN', 'DET', 'GB',
+        'HOU', 'IND', 'JAX', 'KC', 'LA', 'LAC', 'MIA', 'MIN', 'NE', 'NO', 'NYG', 'NYJ',
+        'OAK', 'PHI', 'PIT', 'SEA', 'SF', 'TB', 'TEN', 'WAS'
+    ])
+    superficie = st.selectbox("Tipo de césped", ["Natural", "Sintética"])
+
+    plays_before = st.number_input("Jugadas antes de la lesión", min_value=0)
+    pass_rush = st.number_input("Proporción pase/acarreos (0 a 1)", min_value=0.0, max_value=1.0, value=0.5)
+    load = st.number_input("Carga de rendimiento (performance load)", min_value=0.0)
+    plays_season = st.number_input("Jugadas en la temporada", min_value=0)
+    prev_injury = st.selectbox("¿Lesión previa?", ["No", "Sí"])
 
     if st.button("Predecir Lesión"):
-        cesped_flag = 1 if cesped == "Artificial" else 0
-        datos = pd.DataFrame([[jugadas, cesped_flag]], columns=["snaps", "turf"])
+        columnas = modelo_lesiones.feature_names_in_
+        datos = pd.DataFrame(data=[np.zeros(len(columnas))], columns=columnas)
+
+        # Asignar valores
+        datos.at[0, 'plays_before_injury'] = plays_before
+        datos.at[0, 'pass_rush_ratio'] = pass_rush
+        datos.at[0, 'performance_load'] = load
+        datos.at[0, 'plays_per_season'] = plays_season
+        datos.at[0, 'prev_injury'] = 1 if prev_injury == "Sí" else 0
+
+        equipo_col = f"equipo_{equipo}"
+        superficie_col = "surface_natural" if superficie == "Natural" else "surface_sintetica"
+
+        if equipo_col in datos.columns:
+            datos.at[0, equipo_col] = 1
+        datos.at[0, superficie_col] = 1
+
         pred = modelo_lesiones.predict(datos)[0]
         riesgo = "Alto" if pred == 1 else "Bajo"
         st.warning(f"Riesgo de lesión: {riesgo}")
+
